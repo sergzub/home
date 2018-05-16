@@ -1,0 +1,89 @@
+#!/bin/bash -ue
+
+WP_TR_CURRENT_DIR=''
+
+DieRc()
+{
+    local res=1
+    if [ "$1" -eq "$1" ] 2>/dev/null; then
+        res=$1
+        shift
+    fi
+
+    printf "\n%s: ERROR: %s\n\n" "$(basename "$0")" "$*" >&2
+
+    exit ${res}
+}
+
+Die()
+{
+    DieRc 1 "$@"
+}
+
+# DieFmt()
+# {
+#     local fmt="$1"
+#     shift
+
+#     printf "\n%s: ERROR: ${fmt}\n\n" "$(basename "$0")" "$@" >&2
+
+#     exit 1
+# }
+
+Echo()
+{
+    printf "%b\n" "$*"
+}
+
+DoCommit()
+{
+    if [ $# -gt 1 ]; then
+        Die "too many arguments"
+    fi
+
+    git add -A --verbose
+    git commit -m "[${R1_WP}]" # will produce exit code=1 if empty commit
+}
+
+DoPush()
+{
+    git "$@"
+}
+
+Main()
+{
+    if [ ${EUID} -eq 0 ]; then
+        Die "DO NOT run '$0' with the root privilege!"
+    fi
+
+    if [ -z "${R1_WP:-}" ]; then
+        Die "the 'R1_WP' variable is not specified"
+        exit 1
+    fi
+
+    if [ ! -d ~/r1/this ]; then
+        Die "ERROR: it seems 'encfs' raw directory is not properly mounting"
+    fi
+
+    if [ $# -eq 0 ]; then
+        Echo "Usage: not implemented yet"
+        return 0
+    fi
+
+    WP_TR_CURRENT_DIR=~/r1/wp-tr/"${R1_WP}"
+    cd "${WP_TR_CURRENT_DIR}"
+
+    case "$1" in
+        'commit')
+            DoCommit "$@"
+            ;;
+        'push')
+            DoPush "$@"
+            ;;
+        *)
+            Echo "ERROR: unknown command: $1"
+            ;;
+    esac
+}
+
+Main "$@"
