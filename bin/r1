@@ -42,12 +42,19 @@ DoCommit()
     fi
 
     git add -A --verbose
-    git commit -m "[${R1_WP}]" # will produce exit code=1 if empty commit
+    git commit -m "[${R1_WP}]" # returns 1 for empty commit
 }
 
 DoPush()
 {
     git "$@"
+}
+
+DoSize()
+{
+    Echo "Number of dirs : $(find -type d|wc -l)"
+    Echo "Number of files: $(find -type f|wc -l)"
+    Echo "Total size of '${R1_WP}': $(du -hs)"
 }
 
 Main()
@@ -80,8 +87,11 @@ Main()
         'push')
             DoPush "$@"
             ;;
+        'size')
+            DoSize "$@"
+            ;;
         *)
-            Echo "ERROR: unknown command: $1"
+            Die "unknown command: $1"
             ;;
     esac
 }
