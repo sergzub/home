@@ -1,0 +1,16 @@
+## Create new file int the '/etc/sudoers.d' directory
+
+# (umask 337 && echo 'zsm ALL=NOPASSWD:ALL' > /etc/sudoers.d/zsm)
+
+
+##################################################
+## DEPRECATED
+## Add user to the 'sudo' group
+## Will need to log out and log back in
+
+# adduser zsm sudo
+
+## Modify the folloing line by run 'visudo' command:
+# Allow members of group sudo to execute any command
+#%sudo  ALL=(ALL:ALL) ALL
+%sudo   ALL=NOPASSWD:ALL
