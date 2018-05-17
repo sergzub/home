@@ -1,0 +1,52 @@
+# set -e
+
+# Upgrade system
+sudo apt update && apt upgrade
+
+# Install usefull packages
+sudo apt install encfs mc
+
+# Put at the begin of ~/.profile and execute at command line
+export R1_WP=work # | home | notebook | ...
+
+mkdir ~/r1 && cd $_ && chmod 700 . && mkdir wp wp-raw wp-tr
+ln -s "wp/${R1_WP}" 'this'
+
+# Extract '.encfs6.xml' to the 'wp-raw' directory and start encfs
+encfs ~/r1/wp-raw ~/r1/wp
+
+# Ensure that "${R1_WP}" directory does not exist
+[ -d "${R1_WP}" ] || echo "$'{R1_WP}' directory already exists!!!"
+
+# Create "${R1_WP}" directory
+mkdir "wp/${R1_WP}"
+
+# Look at encoded name for "${R1_WP}" in 'wp-raw' and substitute it
+ln -s "../wp-raw/<R1_WP encoded name>" "wp-tr/${R1_WP}"
+
+# Clone git repo
+git clone -b master https://github.com/sergzub/r1.git git
+cd git
+
+# Set fake user
+git config user.name "r1user"
+git config user.email "r1user@example.com"
+# Set usefull git config settings
+git config core.compression 0
+
+# Set protection hooks
+# cp -P hooks/* .git/hooks/
+
+# Uncomment if you will auth by ssh key
+#git remote set-url origin git@github.com:sergzub/r1.git
+
+# Instead of 'boostrap' it can be more fresh WP branch
+git worktree add -b "${R1_WP}" "../wp-tr/${R1_WP}" "${R1_WP}"
+# Mark all files as binary
+# echo '* binary' > "../wp-tr/${R1_WP}/.gitattributes"
+
+#============================
+
+# Creating bare repository
+cd ../wp/
+git init --bare .
