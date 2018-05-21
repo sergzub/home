@@ -1,5 +1,5 @@
 # set PATH so it includes user's private 'bin' if it's still not set
-if ! echo "$PATH" | grep -P "(^|:)$HOME/bin(:|\$)" >/dev/null; then
+if [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
     PATH="$HOME/bin:$PATH"
 fi
 
