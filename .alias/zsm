@@ -1,3 +1,8 @@
+# set PATH so it includes user's private 'bin' if it's still not set
+if ! echo "$PATH" | grep -Pq "(^|:)$HOME/bin(:|\$)"; then
+    PATH="$HOME/bin:$PATH"
+fi
+
 export PS1='\u@\h:\w\[\033[32m\]$(__git_ps1 | sed -e '\''s:^ *(\(.*\)) *$:[\1]:'\'')\[\033[00m\]\$ '
 
 alias h='history'
