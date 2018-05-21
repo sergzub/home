@@ -9,6 +9,8 @@ sudo apt install encfs mc
 # Put at the begin of ~/.profile and execute at command line
 export R1_WP=work # | home | notebook | ...
 
+# Uncommit line 'PATH="$HOME/bin:$PATH"' in the ~/.profile
+
 mkdir ~/r1 && cd $_ && chmod 700 . && mkdir wp wp-raw wp-tr
 ln -s "wp/${R1_WP}" 'this'
 

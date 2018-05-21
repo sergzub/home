@@ -42,7 +42,8 @@ DoCommit()
     fi
 
     git add -A --verbose
-    git commit -m "[${R1_WP}]" # returns 1 for empty commit
+    git diff --quiet --exit-code --cached && { Echo "No changes to commit"; return 0; }
+    git "$@" -m "[${R1_WP}]" # returns 1 for empty commit
 }
 
 DoPush()
