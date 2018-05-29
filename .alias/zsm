@@ -5,17 +5,33 @@ fi
 
 export PS1='\u@\h:\w\[\033[32m\]$(__git_ps1 | sed -e '\''s:^ *(\(.*\)) *$:[\1]:'\'')\[\033[00m\]\$ '
 
+need_reboot()
+{
+    if [ -f /var/run/reboot-required ]; then
+        cat /var/run/reboot-required
+
+        if [ -f /var/run/reboot-required.pkgs ]; then
+            echo '======= Packages reboot required ========='
+            cat /var/run/reboot-required.pkgs
+            echo '=========================================='
+        fi
+    fi
+}
+
+alias aa='sudo apt update && apt list --upgradable'
+alias au='sudo apt upgrade && sudo apt autoremove && need_reboot'
 alias h='history'
+alias ss='ps -ef | grep'
+
+alias gh="vcsh home" # Git Home
+alias r1cp="r1 commit && r1 push github ${R1_WP}"
+
 
 # xtitle()
 # {
 #     printf '%b' "\033]0;$*\007"
 # }
-
 # cd()
 # {
 #     builtin cd "$@" && xtitle $HOST: $PWD
 # }
-
-alias gh="vcsh home" # Git Home
-alias r1cp="r1 commit && r1 push github ${R1_WP}"
