@@ -5,21 +5,8 @@
 
 export PS1='\u@\h:\w\[\033[32m\]$(__git_ps1 | sed -e '\''s:^ *(\(.*\)) *$:[\1]:'\'')\[\033[00m\]\$ '
 
-need_reboot()
-{
-    if [ -f /var/run/reboot-required ]; then
-        cat /var/run/reboot-required
-
-        if [ -f /var/run/reboot-required.pkgs ]; then
-            echo '======= Packages reboot required ========='
-            cat /var/run/reboot-required.pkgs
-            echo '=========================================='
-        fi
-    fi
-}
-
 alias aa='sudo apt update && apt list --upgradable'
-alias au='sudo apt upgrade && sudo apt autoremove && need_reboot'
+alias au='sudo apt upgrade && sudo apt autoremove && is-reboot-needed'
 alias h='history'
 alias ss='ps -ef | grep'
 

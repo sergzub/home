@@ -1,0 +1,24 @@
+#!/bin/bash -eu
+
+readonly THIS_PATH="$(cd "$(dirname "$0")" && pwd)"
+
+# IncludeSsh 'colors.ssh'
+
+if [ -f /var/run/reboot-required ]; then
+    cat /var/run/reboot-required
+
+    if [ -f /var/run/reboot-required.pkgs ]; then
+        echo
+        echo '======= Packages reboot required ========='
+        cat /var/run/reboot-required.pkgs
+        echo '=========================================='
+    fi
+    exit 0
+else
+    echo '*************************'
+    echo '*                       *'
+    echo '*   No need to reboot   *'
+    echo '*                       *'
+    echo '*************************'
+    exit 1
+fi
