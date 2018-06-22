@@ -42,7 +42,7 @@ DoCommit()
     fi
 
     git add -A --verbose
-    git diff --quiet --exit-code --cached && { Echo "No changes to commit"; return 0; }
+    git diff --quiet --exit-code --cached && { Echo "No changes to commit"; return 2; }
     git "$@" -m "[${R1_WP}]" # returns 1 for empty commit
 }
 
