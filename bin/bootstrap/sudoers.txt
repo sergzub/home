@@ -2,6 +2,8 @@
 
 # (umask 337 && echo 'zsm ALL=NOPASSWD:ALL' > /etc/sudoers.d/zsm)
 
+## May be you wish to add below line to the '/etc/sudoers.d/zsm' file:
+Defaults exempt_group="zsm"
 
 ##################################################
 ## DEPRECATED
