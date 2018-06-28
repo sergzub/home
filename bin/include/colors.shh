@@ -1,0 +1,32 @@
+if [ -z "${__COLORS_SSH_INCULDE_GUARD__:-}" ]; then
+readonly __COLORS_SSH_INCULDE_GUARD__=1
+
+readonly SGR0=$'\x1B\x28\x42\x1B\x5B\x6D'
+
+readonly BLACK=$'\x1B\x5B\x33\x30\x6D'
+readonly RED=$'\x1B\x5B\x33\x31\x6D'
+readonly GREEN=$'\x1B\x5B\x33\x32\x6D'
+readonly YELLOW=$'\x1B\x5B\x33\x33\x6D'
+readonly BLUE=$'\x1B\x5B\x33\x34\x6D'
+readonly MAGENTA=$'\x1B\x5B\x33\x35\x6D'
+readonly CYAN=$'\x1B\x5B\x33\x36\x6D'
+readonly WHITE=$'\x1B\x5B\x33\x37\x6D'
+
+readonly BLACK_BG=$'\x1B\x5B\x34\x30\x6D'
+readonly RED_BG=$'\x1B\x5B\x34\x31\x6D'
+readonly GREEN_BG=$'\x1B\x5B\x34\x32\x6D'
+readonly YELLOW_BG=$'\x1B\x5B\x34\x33\x6D'
+readonly BLUE_BG=$'\x1B\x5B\x34\x34\x6D'
+readonly MAGENTA_BG=$'\x1B\x5B\x34\x35\x6D'
+readonly CYAN_BG=$'\x1B\x5B\x34\x36\x6D'
+readonly WHITE_BG=$'\x1B\x5B\x34\x37\x6D'
+
+readonly TEXT_BOLD=$'\x1B\x5B\x31\x6D'
+readonly TEXT_BLINK=$'\x1B\x5B\x35\x6D'
+readonly TEXT_REVERSE=$'\x1B\x5B\x37\x6D'
+readonly TEXT_STANDOUT_ON=$'\x1B\x5B\x37\x6D'
+readonly TEXT_STANDOUT_OFF=$'\x1B\x5B\x32\x37\x6D'
+readonly TEXT_UNDERLINED_ON=$'\x1B\x5B\x34\x6D'
+readonly TEXT_UNDERLINED_OFF=$'\x1B\x5B\x32\x34\x6D'
+
+fi # __COLORS_SSH_INCULDE_GUARD__
