@@ -2,23 +2,25 @@
 
 readonly THIS_PATH="$(cd "$(dirname "$0")" && pwd)"
 
-# IncludeSsh 'colors.ssh'
+. "${THIS_PATH}/include.shh" "${THIS_PATH}/include"
+IncludeSsh 'colors.shh'
 
 if [ -f /var/run/reboot-required ]; then
     cat /var/run/reboot-required
 
     if [ -f /var/run/reboot-required.pkgs ]; then
         echo
-        echo '======= Packages reboot required ========='
+        echo '======= Packages require reboot =========='
         cat /var/run/reboot-required.pkgs
         echo '=========================================='
     fi
+    echo ${MAGENTA}${TEXT_BOLD}
+    echo '╔═════════════════════════╗'
+    echo '║ System requires reboot! ║'
+    echo '╚═════════════════════════╝'
+    echo ${SGR0}
     exit 0
 else
-    echo '*************************'
-    echo '*                       *'
-    echo '*   No need to reboot   *'
-    echo '*                       *'
-    echo '*************************'
+    echo "No need to reboot"
     exit 1
 fi

@@ -29,4 +29,7 @@ readonly TEXT_STANDOUT_OFF=$'\x1B\x5B\x32\x37\x6D'
 readonly TEXT_UNDERLINED_ON=$'\x1B\x5B\x34\x6D'
 readonly TEXT_UNDERLINED_OFF=$'\x1B\x5B\x32\x34\x6D'
 
+readonly GRAY="${BLACK}${TEXT_BOLD}"
+readonly GRAY_BG="${BLACK_BG}${TEXT_BOLD}"
+
 fi # __COLORS_SSH_INCULDE_GUARD__
