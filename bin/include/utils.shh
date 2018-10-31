@@ -1,6 +1,11 @@
 if [ -z "${__UTILS_SSH_INCULDE_GUARD__:-}" ]; then
 readonly __UTILS_SSH_INCULDE_GUARD__=1
 
+AssignAtVar()
+{
+    eval "${1#@}=\"\${2}\""
+}
+
 Repeat()
 {
     local num="$1"
