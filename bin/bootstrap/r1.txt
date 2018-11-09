@@ -6,10 +6,11 @@ sudo apt update && apt upgrade
 # Install usefull packages
 sudo apt install encfs mc
 
-# Put at the begin of ~/.profile and execute at command line
-export R1_WP=work # | home | notebook | ...
+# Uncommit and modify line 'PATH="$HOME/bin:$PATH"' in the ~/.profile
 
-# Uncommit line 'PATH="$HOME/bin:$PATH"' in the ~/.profile
+# Put into the ~/.profile and execute at command line
+export R1_WP=work # | home | notebook | ...
+export PS1='\u@\h:\w\[\033[32m\]$(__git_ps1 | sed -e '\''s:^ *(\(.*\)) *$:[\1]:'\'')\[\033[00m\]\$ '
 
 mkdir ~/r1 && cd $_ && chmod 700 . && mkdir wp wp-raw wp-tr
 ln -s "wp/${R1_WP}" 'this'
