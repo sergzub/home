@@ -9,9 +9,31 @@
 
 
 DATEFMT='+%FT%T%:z'
-PRODUCT_NAME=kesl
-OUT_DIR_NAME=a.${PRODUCT_NAME}
-PRODUCT_OUT_DIR=~/work/${OUT_DIR_NAME}
+PRODUCT_NAME='kesl'
+
+ChoosePrjName()
+{
+    case "$1" in
+        'l'|'lmc')
+            PRODUCT_NAME=lmc
+            ;;
+        'k'|'kesl')
+            PRODUCT_NAME=kesl
+            ;;
+        *)
+            PRODUCT_NAME=kesl
+            ;;
+    esac
+
+    echo "====== '${PRODUCT_NAME}' project has been selected ======"
+}
+
+UpdatePrjtName()
+{
+    ChoosePrjName "$@"
+    OUT_DIR_NAME=a.${PRODUCT_NAME}
+    PRODUCT_OUT_DIR=~/work/${OUT_DIR_NAME}
+}
 
 kclic()
 {
@@ -36,12 +58,14 @@ isKavStarted()
 
 cmk_func()
 {
-    isKavStarted || return $?;
+    # isKavStarted || return $?;
 
-    local cfg="$1"
-    if [ -z "${cfg}" ]; then
-    cfg="Debug"
-    fi
+    UpdatePrjtName "$@"
+
+    local cfg="Debug"
+    # if [ -z "${cfg}" ]; then
+    #    cfg="Debug"
+    # fi
 
     local OUTDIR="${PRODUCT_OUT_DIR}.${cfg}"
     if [ ! -d "${OUTDIR}" ]; then
@@ -55,7 +79,9 @@ cmk_func()
 
 mk_func()
 {
-    isKavStarted || return $?;
+    # isKavStarted || return $?;
+
+    UpdatePrjtName "$@"
 
     local PRJS=("${@}")
     if [ ${#PRJS[@]} -eq 0 ]; then
