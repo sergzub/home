@@ -1,0 +1,3 @@
+if [ -f ~/.readline-bindings ] ; then
+    bind -f ~/.readline-bindings
+fi
