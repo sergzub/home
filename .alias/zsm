@@ -5,6 +5,7 @@ alias aa='sudo apt update && apt list --upgradable'
 alias au='sudo apt upgrade && sudo apt autoremove && is-restart-required'
 alias h='history'
 alias ss='ps -ef | grep'
+alias mc='mc -x'
 
 alias gh="vcsh home" # Git Home
 alias r1cp="r1 commit && r1 push github ${R1_WP}"
