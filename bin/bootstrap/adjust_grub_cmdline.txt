@@ -14,6 +14,6 @@ kaiser repoline?
 
 # mcedit /etc/default/grub
 
-GRUB_CMDLINE_LINUX_DEFAULT="... pti=off spectre_v2=off l1tf=off spec_store_bypass_disable=off nospectre_v1 nospec_store_bypass_disable nospectre_v2 nopti spectre_v2_user=off noibrs noibpb"
+GRUB_CMDLINE_LINUX_DEFAULT="... pti=off spectre_v2=off l1tf=off spec_store_bypass_disable=off nospectre_v1 nospec_store_bypass_disable nospectre_v2 nopti spectre_v2_user=off noibrs noibpb mds=off"
 
 # update-grub
