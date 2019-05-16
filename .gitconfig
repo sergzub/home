@@ -12,5 +12,6 @@
 	ll = log --all --source --oneline --graph
 	ba = branch -avv
 	br = branch
+	sm = submodule
 [gc]
 	autoDetach = false
