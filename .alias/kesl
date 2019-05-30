@@ -7,7 +7,6 @@
 #export P4CONFIG=.p4config
 #export P4EDITOR=mcedit
 
-
 DATEFMT='+%FT%T%:z'
 PRODUCT_NAME='kesl'
 
@@ -103,13 +102,19 @@ mk_func()
     cmake --build "${OUTDIR}" -- VERBOSE=1 -j2 "${PRJS[@]}" 2>&1 # | tee "${OUTDIR}/../make.log.$(date ${DATEFMT})"
 }
 
+kav_func()
+{
+    # sudo /etc/init.d/${PRODUCT_NAME}-supervisor
+    sudo systemctl $1 ${PRODUCT_NAME}
+}
+
 alias cmk=cmk_func
 alias mk=mk_func
 
 alias mkc='mk Control64'
 alias mkp='mk Product_bl64'
 
-alias kav='sudo /etc/init.d/${PRODUCT_NAME}-supervisor'
+alias kav='kav_func'
 alias kavs='/opt/kaspersky/${PRODUCT_NAME}/bin/${PRODUCT_NAME}-setup.pl'
 alias kavas='sudo /opt/kaspersky/${PRODUCT_NAME}/bin/${PRODUCT_NAME}-setup.pl --autoinstall=${HOME}/work/autoinstall.ini'
 alias kavp='sudo dpkg --purge ${PRODUCT_NAME}-dbg-unsigned'
