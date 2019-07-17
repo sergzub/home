@@ -1,6 +1,3 @@
-if [ -z "${__UTILS_SSH_INCULDE_GUARD__:-}" ]; then
-readonly __UTILS_SSH_INCULDE_GUARD__=1
-
 AssignAtVar()
 {
     eval "${1#@}=\"\${2}\""
@@ -17,5 +14,3 @@ Repeat()
 
     printf '%s' "${line:0:num}"
 }
-
-fi # __UTILS_SSH_INCULDE_GUARD__

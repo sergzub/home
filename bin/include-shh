@@ -1,0 +1,76 @@
+if [ -z "${__INCLUSE_SHH_INCLUDE_GUARD__:-}" ]; then
+readonly __INCLUSE_SHH_INCLUDE_GUARD__=1
+
+if [ -z "${INCLUDE_SHH_STANDALONE:-}" ]; then
+    : "${INCLUDE_SHH_PATH:?The 'INCLUDE_SHH_PATH' variable must be set and not null}"
+fi
+
+__GetIncludedSshModuleSpecs__()
+{
+    local _module="${1%.shh}"
+    : "${_module:?Module name must be specified}"
+
+    shift
+
+    eval "${1#@}=\${_module}"
+    
+    local _hash=$(printf '%s' "${_module}" | md5sum | { IFS=' ' read -r hashValue fileName; printf '%s' "${hashValue}"; })
+    eval "${2#@}=__INCLUDE_SHH_MODULE_${_hash}__"
+}
+
+StandaloneShh()
+{
+    : "${INCLUDE_SHH_STANDALONE:?INCLUDE_SHH_STANDALONE variable must be set and not null}"
+
+    local incModuleName=''
+    local incGuardVarName=''
+    __GetIncludedSshModuleSpecs__ "${1}" @incModuleName @incGuardVarName
+
+    eval "${incGuardVarName}=1"
+}
+
+Include()
+{
+    local incModuleName=''
+    local incGuardVarName=''
+    __GetIncludedSshModuleSpecs__ "${1}" @incModuleName @incGuardVarName
+
+    if ! eval "test -z \"\${${incGuardVarName}:-}\""; then
+        # Already included
+        return
+    fi
+
+    if [ ! -z "${INCLUDE_SHH_STANDALONE:-}" ]; then
+        eval : "\${${incGuardVarName}:?Module ${incModuleName} source code must be subtituted and marked as standalone by the StandaloneSh() function.}"
+        return
+    fi
+
+    : "${INCLUDE_SHH_PATH:?INCLUDE_SHH_PATH variable must be set and not null}"
+
+    local path="${INCLUDE_SHH_PATH%%:*}"
+    local rest="${INCLUDE_SHH_PATH#:*}"
+
+    while :; do
+        if [ "${path#/}" = "${path}" ]; then
+            echo "ERROR: shh-include path must be an absolute path: '${path}'" 1>&2
+            return 1
+        fi
+
+        local moduleFilePath="${path}/${incModuleName}.shh"
+        if [ -f "${moduleFilePath}" ]; then
+            eval "${incGuardVarName}=1"
+            . "${moduleFilePath}" || return $?
+            break
+        fi
+
+        path="${rest%%:*}"
+        rest="${rest#:*}"
+        if [ "${path}" = "${rest}" ]; then
+            echo "ERROR: module '${incModuleName}' not found" 1>&2
+            return 1
+        fi
+    done
+}
+
+fi
+# End of __INCLUSE_SHH_INCLUDE_GUARD__
