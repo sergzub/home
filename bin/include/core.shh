@@ -1,0 +1,84 @@
+Echo()
+{
+    printf "%s\n" "$*"
+}
+
+EchoBS()
+{
+    printf "%b\n" "$*"
+}
+
+DieRcFmt()
+{
+    local res="${1:?}"
+    local fmt="${2:?}"
+
+    if [ ! "${res}" -eq "${res}" ] 2>/dev/null; then
+        DieFatal "illegal number '${res}' is used as exit code"
+    fi
+
+    local lvlTxt='ERROR'
+    if [ "${res}" -lt 0 ]; then
+        lvlTxt='FATAL'
+        res=$((-${res}))
+    elif [ "${res}" -eq 0 ]; then
+        lvlTxt='WARNING'
+    fi
+
+    if [ "${res}" -lt 0 ] || [ "${res}" -gt 255 ]; then
+        DieFatal "exit code '${res}' must be in interval [0; 255]"
+    fi
+
+    shift
+    shift
+
+    printf "\n%s: ${lvlTxt}: ${fmt}\n\n" "$0" "$*" 1>&2
+
+    if [ ${res} -ne 0 ]; then
+        exit ${res}
+    fi
+}
+
+DieRc()
+{
+    local res="${1:?}"
+    shift
+    DieRcFmt "${res}" "%s" "$@"
+}
+
+DieFmt()
+{
+    local fmt="${1:?}"
+    shift
+    DieRcFmt 1 "${fmt}" "$@"
+}
+
+Die()
+{
+    DieRc 1 "$@"
+}
+
+Warn()
+{
+    DieRc 0 "$@"
+}
+
+Fatal()
+{
+    DieRc -1 "$@"
+}
+
+Function()
+{
+    local fn="${1:?}"
+
+    if type "${fn}" | grep -Fiq 'function'; then
+        Fatal "'${fn}' is already defined as function name"
+    fi
+
+    eval "${fn}()
+    {
+        local fn='${fn}'
+        Fatal \"call to undefined function '\${fn}'\"
+    }"
+}
