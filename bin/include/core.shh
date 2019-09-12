@@ -3,6 +3,11 @@ IsVarSet()
     eval "[ \"\${${1}+isset}\" = 'isset' ]"
 }
 
+AssignAtVar()
+{
+    eval "${1#@}=\"\${2}\""
+}
+
 Out()
 {
     local s="${1}"
@@ -101,9 +106,14 @@ Out()
     printf '%b' "${out}"
 }
 
+# OutFmt()
+# {
+#     ???
+# }
+
 Echo()
 {
-    Out "$*"
+    Out "$*\n"
 }
 
 DieRcFmt()
@@ -131,6 +141,7 @@ DieRcFmt()
     shift
 
     printf "\n%s: ${lvlTxt}: ${fmt}\n\n" "$0" "$*" 1>&2
+    # OutFmt "\n%s: <b><red>${lvlTxt}:<red></b> ${fmt}\n\n" "$0" "$*" 1>&2
 
     if [ ${res} -ne 0 ]; then
         exit ${res}

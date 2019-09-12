@@ -5,12 +5,12 @@ IsVarSet()
     eval "[ \"\${${1}+isset}\" = 'isset' ]"
 }
 
-PrintHexCodes()
+PrintOctalCodes()
 {
     local codes="${!1}" # is the same as: eval "local codes=\${${1}}"
     printf "readonly ${1}='"
     for((i=0;i<${#codes};i++)); do
-        printf '\\x%02X' "'${codes:${i}:1}"
+        printf '\\0%o' "'${codes:${i}:1}"
     done
     printf "'\n"
 }
@@ -23,7 +23,7 @@ SetVarByTPut()
         eval "readonly ${var}=\$(tput \"\$@\")"
     # fi
 
-    PrintHexCodes "${var}"
+    PrintOctalCodes "${var}"
 }
 
 SetVarBySetTerm()
@@ -34,14 +34,14 @@ SetVarBySetTerm()
         eval "readonly ${var}=\$(setterm \"\$@\")"
     # fi
 
-    PrintHexCodes "${var}"
+    PrintOctalCodes "${var}"
 }
 
 SetColorVarCode()
 {
     eval "readonly ${1}='${2}'"
 
-    PrintHexCodes "${1}"
+    PrintOctalCodes "${1}"
 }
 
 # --------------------------------------------
@@ -73,13 +73,13 @@ SetVarBySetTerm TEXT_BOLD_OFF    --bold off
 SetVarBySetTerm TEXT_BLINK_ON    --blink on
 SetVarBySetTerm TEXT_BLINK_OFF   --blink off
 
-# SetVarByTPut TEXT_REVERSE        rev
-
 SetVarByTPut TEXT_STANDOUT_ON    smso
 SetVarByTPut TEXT_STANDOUT_OFF   rmso
 
 SetVarByTPut TEXT_UNDERLINED_ON  smul
 SetVarByTPut TEXT_UNDERLINED_OFF rmul
+
+# SetVarByTPut TEXT_REVERSE        rev
 
 # Commented below do not work in PuTTy at least
 
@@ -92,12 +92,6 @@ SetVarByTPut TEXT_UNDERLINED_OFF rmul
 
 # SetVarByTPut TEXT_ALTERNATE_ON   smacs
 # SetVarByTPut TEXT_ALTERNATE_OFF  rmacs
-
-# --------------------------------------------
-# 256 colors (works in PuTTY but no needed now)
-#
-# SetColorVarCode COLOR_GRAY          $'\x1B[38;5;8m'
-# SetColorVarCode COLOR_GRAY_BG       $'\x1B[48;5;8m'
 
 # --------------------------------------------
 # Tests
@@ -218,28 +212,12 @@ Out()
     printf '%b' "${out}"
 }
 
-OutIn()
-{
-    local s=''
-    while IFS='' read -r s; do
-        # Out "${s}"
-        printf '%s' "$s"
-    done
-}
-
 echo '---------------------------'
 #Out "<u>Underline</u>\n"
 Out "Begin <b>Bold</b> End\n"
 Out "Begin<u> Underlined </u>End\n"
 Out "Begin <green>Green text color</green> END\n"
 Out "Begin <b><green>Bold+Green text color</green></b> END\n"
+Out "Begin <red>Red text color</red> END\n"
+Out "Begin <b><red>Bold+Red text color</red></b> END\n"
 Out "Begin &lt;&amp;&gt; End\n"
-#echo "Begin <u><cyan>Underlined cyan</cyan></u>End" | OutIn
-# OutIn <<< "Begin <u><cyan>Underlined cyan</cyan></u> End\n"
-OutIn << EOS
-Begin <u><cyan>Underlined cyan</cyan></u> End
-
-???
-
-.
-EOS
