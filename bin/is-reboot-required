@@ -4,31 +4,32 @@ readonly SELF_PATH="$(readlink -e "$(dirname "$0")")"
 readonly INCLUDE_SHH_PATH="${SELF_PATH}/include"
 . "${SELF_PATH}/include-shh"
 
-# Include 'colors'
-# Include 'utils'
+Include 'utils'
 
 Main()
 {
-    if [ ! -f '/var/run/reboot-required' ]; then
+    if [ -f '/var/run/reboot-required' ]; then
         if [ -f '/var/run/reboot-required.pkgs' ]; then
             echo
             echo '======= Packages that require reboot =========='
             cat '/var/run/reboot-required.pkgs'
             echo '==============================================='
         fi
-        local msg='321321321' # msg="$(cat /var/run/reboot-required)"
+        local msg="$(cat /var/run/reboot-required)"
         local columns=$((${#msg} + 2))
         Out "<b><magenta>"
-        printf '╔'; Repeat ${columns} '═'; printf '╗\n'
+        local doubleLine=''
+        RepeatToVar ${columns} '═' @doubleLine
+        printf '╔%s╗\n' "${doubleLine}"
         printf '║ %s ║\n' "${msg}"
-        printf '╚'; Repeat ${columns} '═'; printf '╝\n'
+        printf '╚%s╝\n' "${doubleLine}"
         Out "</reset>"
-        exit 0
+        return 0
     else
         echo "┌───────────────────┐"
         echo "│ No need to reboot │"
         echo "└───────────────────┘"
-        exit 1
+        return 1
     fi
 }
 

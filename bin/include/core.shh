@@ -1,3 +1,5 @@
+Include 'colors'
+
 IsVarSet()
 {
     eval "[ \"\${${1}+isset}\" = 'isset' ]"
@@ -177,17 +179,17 @@ Fatal()
     DieRc -1 "$@"
 }
 
-Function()
-{
-    local fn="${1:?}"
+# Function()
+# {
+#     local fn="${1:?}"
 
-    if type "${fn}" | grep -Fiq 'function'; then
-        Fatal "'${fn}' is already defined as function name"
-    fi
+#     if type "${fn}" | grep -Fiq 'function'; then
+#         Fatal "'${fn}' is already defined as function name"
+#     fi
 
-    eval "${fn}()
-    {
-        local fn='${fn}'
-        Fatal \"call to undefined function '\${fn}'\"
-    }"
-}
+#     eval "${fn}()
+#     {
+#         local fn='${fn}'
+#         Fatal \"call to undefined function '\${fn}'\"
+#     }"
+# }

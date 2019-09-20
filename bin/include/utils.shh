@@ -1,4 +1,4 @@
-Repeat()
+RepeatToVar()
 {
     local num="$1"
     local line="$2"
@@ -7,5 +7,5 @@ Repeat()
         line+="${line}"
     done
 
-    printf '%s' "${line:0:num}"
+    AssignAtVar "${3}" "${line:0:num}"
 }

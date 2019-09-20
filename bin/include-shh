@@ -72,5 +72,7 @@ Include()
     done
 }
 
+Include 'core'
+
 fi
 # End of __INCLUSE_SHH_INCLUDE_GUARD__
