@@ -2,7 +2,7 @@
 export PS1='\u@\h:\w\[\033[32m\]$(__git_ps1 | sed -e '\''s:^ *(\(.*\)) *$:[\1]:'\'')\[\033[00m\]\$ '
 
 alias aa='sudo apt update && apt list --upgradable'
-alias au='sudo apt -y upgrade && sudo apt -y autoremove && is-restart-required'
+alias au='sudo apt -y upgrade && sudo apt -y autoremove && is-reboot-required'
 alias h='history'
 alias ss='ps -ef | grep'
 alias mc='mc -x'
