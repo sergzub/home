@@ -2,7 +2,9 @@ if [ -z "${__INCLUSE_SHH_INCLUDE_GUARD__:-}" ]; then
 readonly __INCLUSE_SHH_INCLUDE_GUARD__=1
 
 if [ -z "${INCLUDE_SHH_STANDALONE:-}" ]; then
-    : "${INCLUDE_SHH_PATH:?The 'INCLUDE_SHH_PATH' variable must be set and not null}"
+    if [ -z "${INCLUDE_SHH_PATH:-}" ]; then
+        readonly INCLUDE_SHH_PATH="$(readlink -e "${0%/*}")/include"
+    fi
 fi
 
 __GetIncludedSshModuleSpecs__()
@@ -31,6 +33,8 @@ StandaloneShh()
 
 Include()
 {
+    : "${INCLUDE_SHH_PATH:?The 'INCLUDE_SHH_PATH' variable must be set and not null}"
+
     local incModuleName=''
     local incGuardVarName=''
     __GetIncludedSshModuleSpecs__ "${1}" @incModuleName @incGuardVarName
@@ -44,8 +48,6 @@ Include()
         eval : "\${${incGuardVarName}:?Module ${incModuleName} source code must be subtituted and marked as standalone by the StandaloneSh() function.}"
         return
     fi
-
-    : "${INCLUDE_SHH_PATH:?INCLUDE_SHH_PATH variable must be set and not null}"
 
     local path="${INCLUDE_SHH_PATH%%:*}"
     local rest="${INCLUDE_SHH_PATH#:*}"

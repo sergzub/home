@@ -1,9 +1,6 @@
 #!/bin/bash -eu
 
-readonly SELF_PATH="$(readlink -e "$(dirname "$0")")"
-readonly INCLUDE_SHH_PATH="${SELF_PATH}/include"
-. "${SELF_PATH}/include-shh"
-
+. 'include-shh'
 Include 'utils'
 
 Main()
