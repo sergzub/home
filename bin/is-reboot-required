@@ -1,6 +1,7 @@
 #!/bin/bash -eu
 
 . 'include-shh'
+Include 'colors'
 Include 'utils'
 
 Main()

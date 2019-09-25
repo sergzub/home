@@ -1,27 +1,106 @@
-readonly SGR0='\033\0133\0155\017'
-readonly BLACK='\033\0133\063\060\0155'
-readonly RED='\033\0133\063\061\0155'
-readonly GREEN='\033\0133\063\062\0155'
-readonly YELLOW='\033\0133\063\063\0155'
-readonly BLUE='\033\0133\063\064\0155'
-readonly MAGENTA='\033\0133\063\065\0155'
-readonly CYAN='\033\0133\063\066\0155'
-readonly WHITE='\033\0133\063\067\0155'
-readonly DEFAULT_FG='\033\0133\063\071\0155'
-readonly BLACK_BG='\033\0133\064\060\0155'
-readonly RED_BG='\033\0133\064\061\0155'
-readonly GREEN_BG='\033\0133\064\062\0155'
-readonly YELLOW_BG='\033\0133\064\063\0155'
-readonly BLUE_BG='\033\0133\064\064\0155'
-readonly MAGENTA_BG='\033\0133\064\065\0155'
-readonly CYAN_BG='\033\0133\064\066\0155'
-readonly WHITE_BG='\033\0133\064\067\0155'
-readonly DEFAULT_BG='\033\0133\064\071\0155'
-readonly TEXT_BOLD_ON='\033\0133\061\0155'
-readonly TEXT_BOLD_OFF='\033\0133\0155\017'
-readonly TEXT_BLINK_ON='\033\0133\065\0155'
-readonly TEXT_BLINK_OFF='\033\0133\0155\017'
-readonly TEXT_STANDOUT_ON='\033\0133\063\0155'
-readonly TEXT_STANDOUT_OFF='\033\0133\062\063\0155'
-readonly TEXT_UNDERLINED_ON='\033\0133\064\0155'
-readonly TEXT_UNDERLINED_OFF='\033\0133\062\064\0155'
+Include 'color-codes'
+
+Out() # redefine core Out() function
+{
+    local s="$*"
+    local out=''
+
+    local useColors=true
+    if [ ! -t 1 ] || IsVarSet NO_COLOR; then # || IsVarSet ANSI_COLORS_DISABLED
+        useColors=false
+    fi
+
+    while :; do
+        local suffix="${s#*<}"
+        if [ ${#suffix} = ${#s} ]; then # '<' not found
+            break
+        fi
+
+        local tag="${suffix%%>*}"
+        if [ ${#tag} = ${#suffix} ]; then # '>' not found
+            break
+        fi
+
+        local idxHead=0
+        idxHead=$(( ${#suffix} + 1 ))
+        out+="${s:0:-${idxHead}}"
+
+        if ${useColors}; then
+            case "${tag}" in
+                'reset'|'/reset' ) out+="${SGR0}" ;;
+
+                'black'   ) out+="${BLACK}"   ;;
+                'red'     ) out+="${RED}"     ;;
+                'green'   ) out+="${GREEN}"   ;;
+                'yellow'  ) out+="${YELLOW}"  ;;
+                'blue'    ) out+="${BLUE}"    ;;
+                'magenta' ) out+="${MAGENTA}" ;;
+                'cyan'    ) out+="${CYAN}"    ;;
+                'white'   ) out+="${WHITE}"   ;;
+
+                '/black'   ) out+="${DEFAULT_FG}" ;;
+                '/red'     ) out+="${DEFAULT_FG}" ;;
+                '/green'   ) out+="${DEFAULT_FG}" ;;
+                '/yellow'  ) out+="${DEFAULT_FG}" ;;
+                '/blue'    ) out+="${DEFAULT_FG}" ;;
+                '/magenta' ) out+="${DEFAULT_FG}" ;;
+                '/cyan'    ) out+="${DEFAULT_FG}" ;;
+                '/white'   ) out+="${DEFAULT_FG}" ;;
+
+                'black_bg'   ) out+="${BLACK_BG}"   ;;
+                'red_bg'     ) out+="${RED_BG}"     ;;
+                'green_bg'   ) out+="${GREEN_BG}"   ;;
+                'yellow_bg'  ) out+="${YELLOW_BG}"  ;;
+                'blue_bg'    ) out+="${BLUE_BG}"    ;;
+                'magenta_bg' ) out+="${MAGENTA_BG}" ;;
+                'cyan_bg'    ) out+="${CYAN_BG}"    ;;
+                'white_bg'   ) out+="${WHITE_BG}"   ;;
+
+                '/black_bg'   ) out+="${DEFAULT_BG}" ;;
+                '/red_bg'     ) out+="${DEFAULT_BG}" ;;
+                '/green_bg'   ) out+="${DEFAULT_BG}" ;;
+                '/yellow_bg'  ) out+="${DEFAULT_BG}" ;;
+                '/blue_bg'    ) out+="${DEFAULT_BG}" ;;
+                '/magenta_bg' ) out+="${DEFAULT_BG}" ;;
+                '/cyan_bg'    ) out+="${DEFAULT_BG}" ;;
+                '/white_bg'   ) out+="${DEFAULT_BG}" ;;
+
+                'b' ) out+="${TEXT_BOLD_ON}"  ;;
+                '/b') out+="${TEXT_BOLD_OFF}" ;;
+
+                'u' ) out+="${TEXT_UNDERLINED_ON}"  ;;
+                '/u') out+="${TEXT_UNDERLINED_OFF}" ;;
+
+                'blink' ) out+="${TEXT_BLINK_ON}"  ;;
+                '/blink') out+="${TEXT_BLINK_OFF}" ;;
+
+                'so' ) out+="${TEXT_STANDOUT_ON}"  ;;
+                '/so') out+="${TEXT_STANDOUT_OFF}" ;;
+            esac
+        fi
+
+        local idxTail=0
+        idxTail=$(( ${#suffix} - ${#tag} - 1 ))
+        if [ ${idxTail} -eq 0 ]; then # '>' is the latest char in the input string
+            s=''
+            break
+        fi
+
+        s="${s:(-${idxTail})}"
+    done
+
+    out+="${s}"
+
+    out="${out//&lt;/<}" 
+    out="${out//&gt;/>}" 
+    out="${out//&amp;/&}" 
+
+    printf '%b' "${out}"
+}
+
+OutErr() # redefine core OutErr() function
+{
+    local titleTxt="${1}"
+    shift
+    Out "<b><red>${titleTxt}: </reset>" "$*\n"
+} 

@@ -1,6 +1,4 @@
-Include 'colors'
-
-IsVarSet()
+IsVarSet() # checks if the variable is defined (or 'set' in term of SHELL)
 {
     eval "[ \"\${${1}+isset}\" = 'isset' ]"
 }
@@ -28,101 +26,15 @@ RemoveLargestSuffix()
 
 Out()
 {
-    local s="${1}"
-    local out=''
-
-    local useColors=true
-    if [ ! -t 1 ] || IsVarSet NO_COLOR; then # || IsVarSet ANSI_COLORS_DISABLED
-        useColors=false
-    fi
-
-    while :; do
-        local suffix="${s#*<}"
-        if [ ${#suffix} = ${#s} ]; then # '<' not found
-            break
-        fi
-
-        local tag="${suffix%%>*}"
-        if [ ${#tag} = ${#suffix} ]; then # '>' not found
-            break
-        fi
-
-        local idxHead=0
-        idxHead=$(( ${#suffix} + 1 ))
-        out+="${s:0:-${idxHead}}"
-
-        if ${useColors}; then
-            case "${tag}" in
-                'reset'|'/reset' ) out+="${SGR0}" ;;
-
-                'black'   ) out+="${BLACK}"   ;;
-                'red'     ) out+="${RED}"     ;;
-                'green'   ) out+="${GREEN}"   ;;
-                'yellow'  ) out+="${YELLOW}"  ;;
-                'blue'    ) out+="${BLUE}"    ;;
-                'magenta' ) out+="${MAGENTA}" ;;
-                'cyan'    ) out+="${CYAN}"    ;;
-                'white'   ) out+="${WHITE}"   ;;
-
-                '/black'   ) out+="${DEFAULT_FG}" ;;
-                '/red'     ) out+="${DEFAULT_FG}" ;;
-                '/green'   ) out+="${DEFAULT_FG}" ;;
-                '/yellow'  ) out+="${DEFAULT_FG}" ;;
-                '/blue'    ) out+="${DEFAULT_FG}" ;;
-                '/magenta' ) out+="${DEFAULT_FG}" ;;
-                '/cyan'    ) out+="${DEFAULT_FG}" ;;
-                '/white'   ) out+="${DEFAULT_FG}" ;;
-
-                'black_bg'   ) out+="${BLACK_BG}"   ;;
-                'red_bg'     ) out+="${RED_BG}"     ;;
-                'green_bg'   ) out+="${GREEN_BG}"   ;;
-                'yellow_bg'  ) out+="${YELLOW_BG}"  ;;
-                'blue_bg'    ) out+="${BLUE_BG}"    ;;
-                'magenta_bg' ) out+="${MAGENTA_BG}" ;;
-                'cyan_bg'    ) out+="${CYAN_BG}"    ;;
-                'white_bg'   ) out+="${WHITE_BG}"   ;;
-
-                '/black_bg'   ) out+="${DEFAULT_BG}" ;;
-                '/red_bg'     ) out+="${DEFAULT_BG}" ;;
-                '/green_bg'   ) out+="${DEFAULT_BG}" ;;
-                '/yellow_bg'  ) out+="${DEFAULT_BG}" ;;
-                '/blue_bg'    ) out+="${DEFAULT_BG}" ;;
-                '/magenta_bg' ) out+="${DEFAULT_BG}" ;;
-                '/cyan_bg'    ) out+="${DEFAULT_BG}" ;;
-                '/white_bg'   ) out+="${DEFAULT_BG}" ;;
-
-                'b' ) out+="${TEXT_BOLD_ON}"  ;;
-                '/b') out+="${TEXT_BOLD_OFF}" ;;
-
-                'u' ) out+="${TEXT_UNDERLINED_ON}"  ;;
-                '/u') out+="${TEXT_UNDERLINED_OFF}" ;;
-
-                'blink' ) out+="${TEXT_BLINK_ON}"  ;;
-                '/blink') out+="${TEXT_BLINK_OFF}" ;;
-
-                'so' ) out+="${TEXT_STANDOUT_ON}"  ;;
-                '/so') out+="${TEXT_STANDOUT_OFF}" ;;
-            esac
-        fi
-
-        local idxTail=0
-        idxTail=$(( ${#suffix} - ${#tag} - 1 ))
-        if [ ${idxTail} -eq 0 ]; then # '>' is the latest char in the input string
-            s=''
-            break
-        fi
-
-        s="${s:(-${idxTail})}"
-    done
-
-    out+="${s}"
-
-    out="${out//&lt;/<}" 
-    out="${out//&gt;/>}" 
-    out="${out//&amp;/&}" 
-
-    printf '%b' "${out}"
+    printf '%b' "$*"
 }
+
+OutErr()
+{
+    local titleTxt="${1}"
+    shift
+    Out "${titleTxt}: $*\n"
+} 
 
 # OutFmt()
 # {
@@ -158,8 +70,7 @@ DieRcFmt()
     shift
     shift
 
-    #printf "\n%s: ${lvlTxt}: ${fmt}\n\n" "$0" "$*" 1>&2
-    Out "<b><red>${lvlTxt}: </reset>$*\n" 1>&2
+    OutErr "\n${lvlTxt}" "$*\n" 1>&2
 
     if [ ${res} -ne 0 ]; then
         exit ${res}

@@ -20,6 +20,19 @@ __GetIncludedSshModuleSpecs__()
     eval "${2#@}=__INCLUDE_SHH_MODULE_${_hash}__"
 }
 
+# IsModuleIncluded()
+# {
+#     local incModuleName=''
+#     local incGuardVarName=''
+#     __GetIncludedSshModuleSpecs__ "${1}" @incModuleName @incGuardVarName
+
+#     if ! eval "test -z \"\${${incGuardVarName}:-}\""; then
+#         return 0 # Already included
+#     else
+#         return 1
+#     fi
+# }
+
 StandaloneShh()
 {
     : "${INCLUDE_SHH_STANDALONE:?INCLUDE_SHH_STANDALONE variable must be set and not null}"
