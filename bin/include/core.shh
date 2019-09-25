@@ -10,6 +10,22 @@ AssignAtVar()
     eval "${1#@}=\"\${2}\""
 }
 
+RemoveLagestPrefix()
+{
+    # verify that input variable ${1} exists
+    eval : "\${${1}?RemoveLagestPrefix(): input variable is undefined}"
+
+    eval "AssignAtVar \"\${3}\" \"\${${1}##\${2}}\""
+}
+
+RemoveLargestSuffix()
+{
+    # verify that input variable ${1} exists
+    eval : "\${${1}?RemoveLargestSuffix(): input variable is undefined}"
+
+    eval "AssignAtVar \"\${3}\" \"\${${1}%%\${2}}\""
+}
+
 Out()
 {
     local s="${1}"
@@ -142,8 +158,8 @@ DieRcFmt()
     shift
     shift
 
-    printf "\n%s: ${lvlTxt}: ${fmt}\n\n" "$0" "$*" 1>&2
-    # OutFmt "\n%s: <b><red>${lvlTxt}:<red></b> ${fmt}\n\n" "$0" "$*" 1>&2
+    #printf "\n%s: ${lvlTxt}: ${fmt}\n\n" "$0" "$*" 1>&2
+    Out "<b><red>${lvlTxt}: </reset>$*\n" 1>&2
 
     if [ ${res} -ne 0 ]; then
         exit ${res}
@@ -177,6 +193,13 @@ Warn()
 Fatal()
 {
     DieRc -1 "$@"
+}
+
+DieIfRoot()
+{
+    if [ "${EUID}" -eq 0 ]; then
+        Die "Don't run '$0' with the root privileges!!!"
+    fi
 }
 
 # Function()
