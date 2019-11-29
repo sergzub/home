@@ -113,6 +113,42 @@ DieIfRoot()
     fi
 }
 
+# Getting non-clobbered output from command substitution
+ExecCommand()
+{
+    # ${1}       -- output variable name
+    # ${2}..{$n} -- command with arguments
+
+    local s=''
+    s="$(shift && { "$@"; } && printf '.')" || return $?
+    AssignAtVar "${1}" "${s%.}"
+}
+
+ReadFile()
+{
+    # ${1} -- file to read
+    # ${2} -- output variable name
+
+    ExecCommand "${2}" "cat" "${1}"
+}
+
+# This function simply replaces every instance of «'» (single quote) within
+# the string with «'\''» (single quote, backslash, single quote, single quote),
+# then puts single quotes at the beginning and end of the string.
+# Since the only character whose meaning is special within single quotes is
+# the single quote character itself, this is totally safe.
+# Trailing newlines are handled correctly, and the single quote at the end doubles
+# as a safety character to prevent command substitution from clobbering
+# the trailing newlines.
+# See also: http://www.etalabs.net/sh_tricks.html
+Quote()
+{
+    # ${1} -- input string
+    # ${2} -- output variable name
+
+    ExecCommand "${2}" 'printf' "%s\n" "${1}" "|" 'sed' "s:':'\\\\'':g;1s:^:':;\$s:\$:':"
+}
+
 # Function()
 # {
 #     local fn="${1:?}"
