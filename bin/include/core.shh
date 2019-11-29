@@ -149,6 +149,15 @@ Quote()
     ExecCommand "${2}" 'printf' "%s\n" "${1}" "|" 'sed' "s:':'\\\\'':g;1s:^:':;\$s:\$:':"
 }
 
+# Check a given string in ${2} match a given filename (glob) pattern in ${1}
+FnMatch()
+{
+    case "${2}" in
+        ${1}) return 0 ;;
+           *) return 1 ;;
+    esac
+}
+
 # Function()
 # {
 #     local fn="${1:?}"
