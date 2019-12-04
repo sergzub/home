@@ -146,7 +146,7 @@ Quote()
     # ${1} -- input string
     # ${2} -- output variable name
 
-    ExecCommand "${2}" 'printf' "%s\n" "${1}" "|" 'sed' "s:':'\\\\'':g;1s:^:':;\$s:\$:':"
+    AssignAtVar "$(printf "%s\n" "${1}" | sed "s:':'\\\\'':g;1s:^:':;\$s:\$:':")" "${2}"
 }
 
 # Check a given string in ${2} match a given filename (glob) pattern in ${1}
