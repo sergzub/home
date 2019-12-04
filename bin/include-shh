@@ -46,8 +46,8 @@ Include()
     local incGuardVarName=''
     __GetIncludedSshModuleSpecs__ "${1}" @incModuleName @incGuardVarName
 
-    if ! eval "test -z \"\${${incGuardVarName}:-}\""; then
-        # Already included
+    if eval "test \"\${${incGuardVarName}:-1}\" -le 0"; then
+        # Already included or including in process now
         return
     fi
 
@@ -67,8 +67,10 @@ Include()
 
         local moduleFilePath="${path}/${incModuleName}.shh"
         if [ -f "${moduleFilePath}" ]; then
-            eval "${incGuardVarName}=1"
-            . "${moduleFilePath}" || return $?
+            eval "${incGuardVarName}=-1" # including in process
+            . "${moduleFilePath}" ||
+                { local res=$?; eval "${incGuardVarName}=${res}"; return ${res}; }
+            eval "${incGuardVarName}=0"
             break
         fi
 
