@@ -7,22 +7,20 @@ IsVarSet() # checks if the variable is defined (or 'set' in term of SHELL)
 
 AssignAtVar()
 {
+    if ! IsVarSet "${1#@}"; then
+        Fatal "output variable '${1#@}' is undefined"
+    fi
+
     eval "${1#@}=\"\${2}\""
 }
 
 RemoveLagestPrefix()
 {
-    # verify that input variable ${1} exists
-    eval : "\${${1}?RemoveLagestPrefix(): input variable is undefined}"
-
     eval "AssignAtVar \"\${3}\" \"\${${1}##\${2}}\""
 }
 
 RemoveLargestSuffix()
 {
-    # verify that input variable ${1} exists
-    eval : "\${${1}?RemoveLargestSuffix(): input variable is undefined}"
-
     eval "AssignAtVar \"\${3}\" \"\${${1}%%\${2}}\""
 }
 
@@ -31,18 +29,22 @@ Echo()
     Out "$*\n"
 }
 
-EchoTitled()
+PrintBacktrace()
 {
-    local title="${1}"
-    shift
-    Echo "${title}: $*"
-} 
+    local stackSize=${#FUNCNAME[@]}
+    if [ ${stackSize} -gt 2 ]; then
+        echo 'Backtrace:'
+        for ((i=1; i<${stackSize}-1; i++)); do
+            printf "%2d: %s:%d: %s()\n" "${i}" "${BASH_SOURCE[$i+1]}" "${BASH_LINENO[$i]}" "${FUNCNAME[$i]}"
+        done
+    fi
+}
 
 Fatal()
 {
-    Echo "\n<b><red>FATAL ERROR:</red> $*</reset>\n"
+    Echo "\n<b><red>FATAL ERROR:</red> $*</reset>"
 
-    # TODO: print stack trace
+    PrintBacktrace
 
     exit 255
 }
