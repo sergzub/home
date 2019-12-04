@@ -1,3 +1,5 @@
+Include 'colors'
+
 IsVarSet() # checks if the variable is defined (or 'set' in term of SHELL)
 {
     eval "[ \"\${${1}+isset}\" = 'isset' ]"
@@ -24,92 +26,58 @@ RemoveLargestSuffix()
     eval "AssignAtVar \"\${3}\" \"\${${1}%%\${2}}\""
 }
 
-Out()
-{
-    printf '%b' "$*"
-}
-
-OutErr()
-{
-    local titleTxt="${1}"
-    shift
-    Out "${titleTxt}: $*\n"
-} 
-
-# OutFmt()
-# {
-#     ???
-# }
-
 Echo()
 {
     Out "$*\n"
 }
 
-DieRcFmt()
+EchoTitled()
 {
-    local res="${1:?}"
-    local fmt="${2:?}"
-
-    if [ ! "${res}" -eq "${res}" ] 2>/dev/null; then
-        DieFatal "illegal number '${res}' is used as exit code"
-    fi
-
-    local lvlTxt='ERROR'
-    if [ "${res}" -lt 0 ]; then
-        lvlTxt='FATAL'
-        res=$((-${res}))
-    elif [ "${res}" -eq 0 ]; then
-        lvlTxt='WARNING'
-    fi
-
-    if [ "${res}" -lt 0 ] || [ "${res}" -gt 255 ]; then
-        DieFatal "exit code '${res}' must be in interval [0; 255]"
-    fi
-
+    local title="${1}"
     shift
-    shift
+    Echo "${title}: $*"
+} 
 
-    OutErr "\n${lvlTxt}" "$*\n" 1>&2
-
-    if [ ${res} -ne 0 ]; then
-        exit ${res}
-    fi
-}
-
-DieRc()
+Fatal()
 {
-    local res="${1:?}"
-    shift
-    DieRcFmt "${res}" "%s" "$@"
-}
+    Echo "\n<b><red>FATAL ERROR:</red> $*</reset>\n"
 
-DieFmt()
-{
-    local fmt="${1:?}"
-    shift
-    DieRcFmt 1 "${fmt}" "$@"
-}
+    # TODO: print stack trace
 
-Die()
-{
-    DieRc 1 "$@"
+    exit 255
 }
 
 Warn()
 {
-    DieRc 0 "$@"
+    Echo "\n<b><white>Warning:</reset> $*\n"
 }
 
-Fatal()
+Die()
 {
-    DieRc -1 "$@"
+    local res=''
+    if [ -z "${EXIT_CODE:-}" ]; then
+        res=1
+    else
+        res="${EXIT_CODE}"
+
+        if [ ! "${res}" -eq "${res}" ] 2>/dev/null; then
+            Fatal "illegal value '${res}' is used as exit code"
+        fi
+
+        if [ "${res}" -lt 0 ] || [ "${res}" -gt 255 ]; then
+            Fatal "exit code '${res}' must be in interval [0; 255]"
+        fi
+    fi
+
+    Echo "\n<b><red>ERROR:</reset> $*\n"
+
+    exit "${res}"
 }
 
 DieIfRoot()
 {
     if [ "${EUID}" -eq 0 ]; then
-        Die "Don't run '$0' with the root privileges!!!"
+        Die "<b>don't run '<u>${0}</u>' with the root privileges!</b>"
     fi
 }
 
@@ -146,7 +114,7 @@ Quote()
     # ${1} -- input string
     # ${2} -- output variable name
 
-    AssignAtVar "$(printf "%s\n" "${1}" | sed "s:':'\\\\'':g;1s:^:':;\$s:\$:':")" "${2}"
+    AssignAtVar "${2}" "$(printf "%s\n" "${1}" | sed "s:':'\\\\'':g;1s:^:':;\$s:\$:':")"
 }
 
 # Check a given string in ${2} match a given filename (glob) pattern in ${1}

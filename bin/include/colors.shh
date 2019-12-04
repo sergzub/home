@@ -97,10 +97,3 @@ Out() # redefine core Out() function
 
     printf '%b' "${out}"
 }
-
-OutErr() # redefine core OutErr() function
-{
-    local titleTxt="${1}"
-    shift
-    Out "<b><red>${titleTxt}: </reset>" "$*\n"
-} 

@@ -1,7 +1,6 @@
 #!/bin/bash -eu
 
 . 'include-shh' # will be found in '~/bin', which should be present in PATH
-Include 'colors'
 Include 'utils'
 
 Main()
