@@ -1,12 +1,6 @@
 if [ -z "${__INCLUSE_SHH_INCLUDE_GUARD__:-}" ]; then
 readonly __INCLUSE_SHH_INCLUDE_GUARD__=1
 
-if [ -z "${INCLUDE_SHH_STANDALONE:-}" ]; then
-    if [ -z "${INCLUDE_SHH_PATH:-}" ]; then
-        readonly INCLUDE_SHH_PATH="$(readlink -e "${0%/*}")/include"
-    fi
-fi
-
 __GetIncludedSshModuleSpecs__()
 {
     local _module="${1%.shh}"
@@ -87,7 +81,47 @@ Include()
     done
 }
 
-Include 'core'
+InitializeShhPath()
+{
+    while :; do
+        if [ -n "${INCLUDE_SHH_STANDALONE:-}" ]; then
+            break
+        fi
+
+        if [ -n "${INCLUDE_SHH_PATH:-}" ]; then
+            break
+        fi
+
+        local path=''
+        if [ -n "${BASH_VERSION:-}" ]; then # in 'bash' we can use BASH_SOURCE
+            path="${BASH_SOURCE[0]%/*}/include"
+        else
+            case "$-" in
+                *i*) # shell is in interactive mode
+                    path="${HOME}/bin/include"
+                    ;;
+                  *)
+                    path="$(readlink -e "${0%/*}")/include" ||
+                        { echo "ERROR: cannot autodetect shh-module include path by script file name: '${0}'" 1>&2; return 1; }
+                    ;;
+            esac
+        fi
+
+        if [ ! -d "${path}" ]; then
+            echo "ERROR: autodetected shh-module include path does not exist: '${path}'"
+            return 1
+        fi
+
+        readonly INCLUDE_SHH_PATH="${path}"
+
+        break
+    done
+
+    InitializeShhPath() { :; } # collapsing function
+}
+
+InitializeShhPath || return $?
+Include 'core'    || return $?
 
 fi
 # End of __INCLUSE_SHH_INCLUDE_GUARD__
