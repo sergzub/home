@@ -1,5 +1,10 @@
 Include 'colors'
 
+Exit()
+{
+    exit "$@"
+}
+
 IsVarSet() # checks if the variable is defined (or 'set' in term of SHELL)
 {
     eval "[ \"\${${1}+isset}\" = 'isset' ]"
@@ -46,7 +51,7 @@ Fatal()
 
     PrintBacktrace
 
-    exit 255
+    Exit 255
 }
 
 Warn()
@@ -73,7 +78,7 @@ Die()
 
     Echo "\n<b><red>ERROR:</reset> $*\n"
 
-    exit "${res}"
+    Exit "${res}"
 }
 
 DieIfRoot()
