@@ -8,6 +8,7 @@
 [alias]
 	co = checkout
 	cm = commit
+	df = diff
 	st = status
 	ll = log --all --source --oneline --graph
 	ba = branch -avv
