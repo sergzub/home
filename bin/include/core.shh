@@ -10,7 +10,7 @@ IsVarSet() # checks if the variable is defined (or 'set' in term of SHELL)
     eval "[ \"\${${1}+isset}\" = 'isset' ]"
 }
 
-AssignAtVar()
+AssignToVar()
 {
     if ! IsVarSet "${1#@}"; then
         Fatal "output variable '${1#@}' is undefined"
@@ -21,12 +21,12 @@ AssignAtVar()
 
 RemoveLagestPrefix()
 {
-    eval "AssignAtVar \"\${3}\" \"\${${1}##\${2}}\""
+    eval "AssignToVar \"\${3}\" \"\${${1}##\${2}}\""
 }
 
 RemoveLargestSuffix()
 {
-    eval "AssignAtVar \"\${3}\" \"\${${1}%%\${2}}\""
+    eval "AssignToVar \"\${3}\" \"\${${1}%%\${2}}\""
 }
 
 Echo()
@@ -96,7 +96,7 @@ ExecCommand()
 
     local s=''
     s="$(shift && { "$@"; } && printf '.')" || return $?
-    AssignAtVar "${1}" "${s%.}"
+    AssignToVar "${1}" "${s%.}"
 }
 
 ReadFile()
@@ -121,7 +121,7 @@ Quote()
     # ${1} -- input string
     # ${2} -- output variable name
 
-    AssignAtVar "${2}" "$(printf "%s\n" "${1}" | sed "s:':'\\\\'':g;1s:^:':;\$s:\$:':")"
+    AssignToVar "${2}" "$(printf "%s\n" "${1}" | sed "s:':'\\\\'':g;1s:^:':;\$s:\$:':")"
 }
 
 # Check a given string in ${2} match a given filename (glob) pattern in ${1}

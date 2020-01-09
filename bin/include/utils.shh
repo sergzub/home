@@ -7,5 +7,5 @@ RepeatToVar()
         txt+="${txt}"
     done
 
-    AssignAtVar "${3}" "${txt:0:num}"
+    AssignToVar "${3}" "${txt:0:num}"
 }
