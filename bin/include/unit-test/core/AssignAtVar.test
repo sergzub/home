@@ -1,0 +1,33 @@
+UnitTest()
+{
+    local var=''
+    local value='abc'
+    if ! AssignAtVar var "${value}"; then
+        return 1
+    fi
+    if [ "${var}" != "${value}" ]; then
+        return 2
+    fi
+}
+Test_OK "Successful assignment: AssignAtVar  var 'abc'"
+
+
+UnitTest()
+{
+    local var=''
+    local value='abc'
+    if ! AssignAtVar @var "${value}"; then
+        return 1
+    fi
+    if [ "${var}" != "${value}" ]; then
+        return 2
+    fi
+}
+Test_OK "Successful assignment: AssignAtVar @var 'abc'"
+
+
+UnitTest()
+{
+    AssignAtVar @var_591ABD1549854D1481EFA5CEEF5E1B1E 'abc'
+}
+Test_FAIL "Assign to a non-existent variable"

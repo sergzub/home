@@ -1,11 +1,11 @@
 RepeatToVar()
 {
-    local num="$1"
-    local line="$2"
+    local num="${1}"
+    local txt="${2}"
 
-    while ((${#line} < num)); do
-        line+="${line}"
+    while ((${#txt} < num)); do
+        txt+="${txt}"
     done
 
-    AssignAtVar "${3}" "${line:0:num}"
+    AssignAtVar "${3}" "${txt:0:num}"
 }
