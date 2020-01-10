@@ -1,0 +1,4 @@
+ContainsForwardSlash()
+{
+    ! [ "${1##*/}" = "${1}" ]
+}
