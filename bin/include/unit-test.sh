@@ -2,6 +2,7 @@
 
 . 'include-shh'
 
+Include 'path'
 Include 'utils'
 
 readonly THIS_PATH="$(readlink -e "$(dirname "$0")")"
@@ -72,13 +73,28 @@ Main()
         Die "'${UNIT_TEST_PATH}' path not found"
     fi
 
-    # if [ $# -gt 0 ]; then
-    # else
-    # fi
+    local tstFilter=()
+    if [ $# -eq 0 ]; then
+        tstFilter+=('-name' '*.test')
+    else
+        tstFilter+=('-false')
+        local arg=''
+        for arg in "$@"; do
+            if ContainsForwardSlash "${arg}"; then
+                if [ "${arg##./}" != './' ]; then
+                    arg="./${arg}"
+                fi
+                tstFilter+=('-o' '-path' "${arg}")
+            else
+                tstFilter+=('-o' '-name' "${arg}")
+            fi
+        done
+    fi
 
-    local allTests="$(find "${UNIT_TEST_PATH}" -type f -name '*.test' -printf '%P\n')"
+    local allTests=''
+    allTests="$(cd "${UNIT_TEST_PATH}" && find . -warn -type f \( "${tstFilter[@]}" \) -printf '%P\n' | sort | uniq)"
     for tst in ${allTests}; do
-        printf '%b' "${tst}\n"
+        Out "<u>${tst}</u>\n"
         ( . "${UNIT_TEST_PATH}/${tst}" ; exit ${TOTAL_RESULT} ) || TOTAL_RESULT=$?
     done
 
