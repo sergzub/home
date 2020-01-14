@@ -1,0 +1,54 @@
+Include 'version'
+
+UnitTest()
+{
+    local ver="1.2.3.4"
+
+    local p1=''
+    local p2=''
+    local p3=''
+    local p4=''
+
+    ParseVersionString "${ver}" @p1 @p2 @p3 @p4 || Fatal "ParseVersionString() error: $?"
+
+    [ "${p1}" = '1' ] && [ "${p2}" = '2' ] && [ "${p3}" = '3' ] && [ "${p4}" = '4' ] || Fatal 'Unexpected parsing result'
+}
+Test_OK "Parse valid version"
+
+UnitTest()
+{
+    local ver="1.2.3.4"
+
+    local p1=''
+    local p3=''
+
+    ParseVersionString "${ver}" @p1 '' @p3 || Fatal "ParseVersionString() error: $?"
+
+    [ "${p1}" = '1' ] && [ "${p3}" = '3' ] || Fatal 'Unexpected parsing result'
+}
+Test_OK "Parse valid version and return results partially"
+
+UnitTest()
+{
+    local ver="1.2.3.4a"
+
+    local p=''
+
+    ParseVersionString "${ver}" @p @p @p @p && Fatal "ParseVersionString() error: $?"
+}
+Test_FAIL "Fail to parse version: 1.2.3.4a"
+
+UnitTest()
+{
+    local ver="1.2.3'a\"b"
+
+    local p1=''
+    local p2=''
+    local p3=''
+
+    ParseVersionStringRegex '^([[:digit:]]{1,10})[.]([[:digit:]]{1,10})[.](.+)$' "${ver}" @p1 @p2 @p3 ||
+        Fatal "ParseVersionString() error: $?"
+
+    [ "${p1}" = '1' ] && [ "${p2}" = '2' ] && [ "${p3}" = "3'a\"b" ] || Fatal 'Unexpected parsing result'
+}
+Test_OK "Parsing version with qoutes and double-quotes"

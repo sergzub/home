@@ -1,0 +1,36 @@
+ParseVersionStringRegex()
+{
+    local _regex="${1}"
+    local _ver="${2}"
+    shift 2
+
+    local _cmd=''
+    _cmd=$(cat <<'PERL_PROGRAM'
+my ($ver, $regex, $num) = @ARGV;
+my @parts = ${ver} =~ /${regex}/;
+if (@parts == 0)
+{
+    printf STDERR "Not matched";
+    exit 127;
+}
+my $i = 0;
+foreach $p (@parts)
+{
+    ++$i;
+
+    # Escape possible single-qoute chars in extracted parts to prevent invalid string assignment or Shell-code injection
+    $p =~ s/'/'\\''/g; 
+
+    printf ("[ -n \"\${%d:-}\" ] && AssignToVar \"\${%d}\" '%s' || true;", $i, $i, $p);
+}
+PERL_PROGRAM
+)
+    local _code=''
+    _code="$(perl -e "${_cmd}" -- "${_ver}" "${_regex}" "$#")" || return $?
+    eval "${_code}" || return $?
+}
+
+ParseVersionString()
+{
+    ParseVersionStringRegex '^([[:digit:]]{1,10})[.]([[:digit:]]{1,10})[.]([[:digit:]]{1,10})[.]([[:digit:]]{1,10})$' "$@"
+}
