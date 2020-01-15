@@ -34,3 +34,61 @@ ParseVersionString()
 {
     ParseVersionStringRegex '^([[:digit:]]{1,10})[.]([[:digit:]]{1,10})[.]([[:digit:]]{1,10})[.]([[:digit:]]{1,10})$' "$@"
 }
+
+CompareVersions()
+{
+    # local _parseFunc="${1}"
+    # local _v1="${2}"
+    # local _v2="${3}"
+    # local _outVar="${4}"
+
+    local _v1_major=''
+    local _v1_minor=''
+    local _v1_fix=''
+    local _v1_build=''
+    "${1}" "${2}" @_v1_major @_v1_minor @_v1_fix @_v1_build || return $?
+
+    local _v2_major=''
+    local _v2_minor=''
+    local _v2_fix=''
+    local _v2_build=''
+    "${1}" "${3}" @_v2_major @_v2_minor @_v2_fix @_v2_build || return $?
+
+    test "${_v1_major}" -eq "${_v1_major}" 2>/dev/null || return $?
+    test "${_v1_minor}" -eq "${_v1_minor}" 2>/dev/null || return $?
+    test "${_v1_fix}"   -eq "${_v1_fix}"   2>/dev/null || return $?
+    test "${_v1_build}" -eq "${_v1_build}" 2>/dev/null || return $?
+
+    test "${_v2_major}" -eq "${_v2_major}" 2>/dev/null || return $?
+    test "${_v2_minor}" -eq "${_v2_minor}" 2>/dev/null || return $?
+    test "${_v2_fix}"   -eq "${_v2_fix}"   2>/dev/null || return $?
+    test "${_v2_build}" -eq "${_v2_build}" 2>/dev/null || return $?
+
+    local _res='='
+
+    while :; do
+        if [ "${_v1_major}" -ne "${_v2_major}" ]; then
+            [ "${_v1_major}" -lt "${_v2_major}" ] && _res='<' || _res='>'
+            break
+        fi
+
+        if [ "${_v1_minor}" -ne "${_v2_minor}" ]; then
+            [ "${_v1_minor}" -lt "${_v2_minor}" ] && _res='<' || _res='>'
+            break
+        fi
+
+        if [ "${_v1_fix}" -ne "${_v2_fix}" ]; then
+            [ "${_v1_fix}" -lt "${_v2_fix}" ] && _res='<' || _res='>'
+            break
+        fi
+
+        if [ "${_v1_build}" -ne "${_v2_build}" ]; then
+            [ "${_v1_build}" -lt "${_v2_build}" ] && _res='<' || _res='>'
+            break
+        fi
+
+        break
+    done
+
+    AssignToVar "${4}" "${_res}" || return $?
+}

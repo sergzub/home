@@ -1,0 +1,16 @@
+Include 'version'
+
+UnitTest()
+{
+    local v1="1.2.3.4"
+    local v2="1.2.3.5"
+
+    local cmp=''
+    
+    CompareVersions 'ParseVersionString' "${v1}" "${v2}" @cmp || Fatal "CompareVersions() error: $?"
+    [ "${cmp}" = '<' ] || Fatal 'Unexpected comparison result'
+
+    CompareVersions 'ParseVersionString' "${v2}" "${v1}" @cmp || Fatal "CompareVersions() error: $?"
+    [ "${cmp}" = '>' ] || Fatal 'Unexpected comparison result'
+}
+Test_OK "CompareVersions"
