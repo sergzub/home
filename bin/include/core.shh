@@ -47,7 +47,7 @@ PrintBacktrace()
 
 Fatal()
 {
-    Echo "\n<b><red>FATAL ERROR:</red> $*</reset>"
+    Echo "<b><red>FATAL ERROR:</red> $*</reset>"
 
     PrintBacktrace
 
