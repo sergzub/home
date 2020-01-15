@@ -23,14 +23,19 @@ PrintTestResult()
     RepeatToVar "${dotLen}" '.' @dotFiller
 
     # ●
-    Out "${LEFT_IDENT} * ${tstDescr}<b><black>${dotFiller}</b></black>"
+    local markSign=''
+    local okFail=''
 
     if [ "${res}" -eq 0 ]; then
-        Out '[ <green>OK</green> ]\n'
+        markSign='+'
+        okFail=' <green>OK</green> '
     else
-        Out '[<b><red>FAIL</red></b>]\n'
+        markSign='-'
+        okFail='<b><red>FAIL</red></b>'
         TOTAL_RESULT=1
     fi
+
+    Out "${LEFT_IDENT} ${markSign} ${tstDescr}<b><black>${dotFiller}</b></black>[${okFail}]\n"
 }
 
 ExecTest()
@@ -42,9 +47,9 @@ ExecTest()
     local res=0
 
     if ${expectedCond}; then
-        outTxt="$(UnitTest 2>&1)" || res=1
+        outTxt="$(UnitTest 2>&1)" || res=$?
     else
-        ! outTxt="$(UnitTest 2>&1)" || res=1
+        outTxt="$(UnitTest 2>&1)" && res=1
     fi
 
     PrintTestResult "${tstDescr}" "${res}"
@@ -94,8 +99,9 @@ Main()
     local allTests=''
     allTests="$(cd "${UNIT_TEST_PATH}" && find . -warn -type f \( "${tstFilter[@]}" \) -printf '%P\n' | sort | uniq)"
     for tst in ${allTests}; do
-        Out "<u>${tst}</u>\n"
+        Out "<yellow>${tst}</yellow>\n"
         ( . "${UNIT_TEST_PATH}/${tst}" ; exit ${TOTAL_RESULT} ) || TOTAL_RESULT=$?
+        Echo
     done
 
     if [ "${TOTAL_RESULT}" -ne 0 ]; then
