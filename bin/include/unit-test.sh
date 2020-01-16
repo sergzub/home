@@ -11,7 +11,8 @@ readonly UNIT_TEST_PATH="${THIS_PATH}/unit-test"
 readonly COLUMNS_NUM="${COLUMNS:-75}"
 readonly LEFT_IDENT='  '
 
-TOTAL_RESULT=0
+TOTAL_COUNT=0
+FAIL_COUNT=0
 
 PrintTestResult()
 {
@@ -32,7 +33,6 @@ PrintTestResult()
     else
         markSign='-'
         okFail='<b><red>FAIL</red></b>'
-        TOTAL_RESULT=1
     fi
 
     Out "${LEFT_IDENT} ${markSign} ${tstDescr}<b><black>${dotFiller}</b></black>[${okFail}]\n"
@@ -52,10 +52,12 @@ ExecTest()
         outTxt="$(UnitTest 2>&1)" && res=1
     fi
 
+    ((++TOTAL_COUNT))
+
     PrintTestResult "${tstDescr}" "${res}"
 
     if [ "${res}" -ne 0 ]; then
-        TOTAL_RESULT=1
+        ((++FAIL_COUNT))
         if [ "${#outTxt}" -ne 0 ]; then
             Out "<b><red>${outTxt}</red></b>\n"
         fi
@@ -100,12 +102,19 @@ Main()
     allTests="$(cd "${UNIT_TEST_PATH}" && find . -warn -type f \( "${tstFilter[@]}" \) -printf '%P\n' | sort | uniq)"
     for tst in ${allTests}; do
         Out "<yellow>${tst}</yellow>\n"
-        ( . "${UNIT_TEST_PATH}/${tst}" ; exit ${TOTAL_RESULT} ) || TOTAL_RESULT=$?
+        local tstStats=''
+        tstStats=$(TOTAL_COUNT=0; FAIL_COUNT=0; . "${UNIT_TEST_PATH}/${tst}" 1>&2 && printf '%d,%d\n' "${TOTAL_COUNT}" "${FAIL_COUNT}")
+        TOTAL_COUNT="$((TOTAL_COUNT + "${tstStats%%,*}"))"
+        FAIL_COUNT="$((FAIL_COUNT + "${tstStats##*,}"))"
         Echo
     done
 
-    if [ "${TOTAL_RESULT}" -ne 0 ]; then
+    OutFmt "Total: %2d\nFail : %2d\n" "${TOTAL_COUNT}" "${FAIL_COUNT}"
+
+    if [ "${FAIL_COUNT}" -gt 0 ]; then
         Die "Tests failed"
+    else
+        Echo
     fi
 }
 
