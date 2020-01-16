@@ -1,18 +1,15 @@
 Include 'color-codes'
 
-Out() # redefine core Out() function
+__Colorize()
 {
-    local s="$*"
-    local out=''
+    local txt="${1}"
+    local useColors="${2}"
 
-    local useColors=true
-    if [ ! -t 1 ] || IsVarSet NO_COLOR; then # || IsVarSet ANSI_COLORS_DISABLED
-        useColors=false
-    fi
+    local res=''
 
     while :; do
-        local suffix="${s#*<}"
-        if [ ${#suffix} = ${#s} ]; then # '<' not found
+        local suffix="${txt#*<}"
+        if [ ${#suffix} = ${#txt} ]; then # '<' not found
             break
         fi
 
@@ -23,77 +20,104 @@ Out() # redefine core Out() function
 
         local idxHead=0
         idxHead=$(( ${#suffix} + 1 ))
-        out+="${s:0:-${idxHead}}"
+        res+="${txt:0:-${idxHead}}"
 
-        if ${useColors}; then
+        if "${useColors}"; then
             case "${tag}" in
-                'reset'|'/reset' ) out+="${SGR0}" ;;
+                'reset'|'/reset' ) res+="${SGR0}" ;;
 
-                'black'   ) out+="${BLACK}"   ;;
-                'red'     ) out+="${RED}"     ;;
-                'green'   ) out+="${GREEN}"   ;;
-                'yellow'  ) out+="${YELLOW}"  ;;
-                'blue'    ) out+="${BLUE}"    ;;
-                'magenta' ) out+="${MAGENTA}" ;;
-                'cyan'    ) out+="${CYAN}"    ;;
-                'white'   ) out+="${WHITE}"   ;;
+                'black'   ) res+="${BLACK}"   ;;
+                'red'     ) res+="${RED}"     ;;
+                'green'   ) res+="${GREEN}"   ;;
+                'yellow'  ) res+="${YELLOW}"  ;;
+                'blue'    ) res+="${BLUE}"    ;;
+                'magenta' ) res+="${MAGENTA}" ;;
+                'cyan'    ) res+="${CYAN}"    ;;
+                'white'   ) res+="${WHITE}"   ;;
 
-                '/black'   ) out+="${DEFAULT_FG}" ;;
-                '/red'     ) out+="${DEFAULT_FG}" ;;
-                '/green'   ) out+="${DEFAULT_FG}" ;;
-                '/yellow'  ) out+="${DEFAULT_FG}" ;;
-                '/blue'    ) out+="${DEFAULT_FG}" ;;
-                '/magenta' ) out+="${DEFAULT_FG}" ;;
-                '/cyan'    ) out+="${DEFAULT_FG}" ;;
-                '/white'   ) out+="${DEFAULT_FG}" ;;
+                '/black'   ) res+="${DEFAULT_FG}" ;;
+                '/red'     ) res+="${DEFAULT_FG}" ;;
+                '/green'   ) res+="${DEFAULT_FG}" ;;
+                '/yellow'  ) res+="${DEFAULT_FG}" ;;
+                '/blue'    ) res+="${DEFAULT_FG}" ;;
+                '/magenta' ) res+="${DEFAULT_FG}" ;;
+                '/cyan'    ) res+="${DEFAULT_FG}" ;;
+                '/white'   ) res+="${DEFAULT_FG}" ;;
 
-                'black_bg'   ) out+="${BLACK_BG}"   ;;
-                'red_bg'     ) out+="${RED_BG}"     ;;
-                'green_bg'   ) out+="${GREEN_BG}"   ;;
-                'yellow_bg'  ) out+="${YELLOW_BG}"  ;;
-                'blue_bg'    ) out+="${BLUE_BG}"    ;;
-                'magenta_bg' ) out+="${MAGENTA_BG}" ;;
-                'cyan_bg'    ) out+="${CYAN_BG}"    ;;
-                'white_bg'   ) out+="${WHITE_BG}"   ;;
+                'black_bg'   ) res+="${BLACK_BG}"   ;;
+                'red_bg'     ) res+="${RED_BG}"     ;;
+                'green_bg'   ) res+="${GREEN_BG}"   ;;
+                'yellow_bg'  ) res+="${YELLOW_BG}"  ;;
+                'blue_bg'    ) res+="${BLUE_BG}"    ;;
+                'magenta_bg' ) res+="${MAGENTA_BG}" ;;
+                'cyan_bg'    ) res+="${CYAN_BG}"    ;;
+                'white_bg'   ) res+="${WHITE_BG}"   ;;
 
-                '/black_bg'   ) out+="${DEFAULT_BG}" ;;
-                '/red_bg'     ) out+="${DEFAULT_BG}" ;;
-                '/green_bg'   ) out+="${DEFAULT_BG}" ;;
-                '/yellow_bg'  ) out+="${DEFAULT_BG}" ;;
-                '/blue_bg'    ) out+="${DEFAULT_BG}" ;;
-                '/magenta_bg' ) out+="${DEFAULT_BG}" ;;
-                '/cyan_bg'    ) out+="${DEFAULT_BG}" ;;
-                '/white_bg'   ) out+="${DEFAULT_BG}" ;;
+                '/black_bg'   ) res+="${DEFAULT_BG}" ;;
+                '/red_bg'     ) res+="${DEFAULT_BG}" ;;
+                '/green_bg'   ) res+="${DEFAULT_BG}" ;;
+                '/yellow_bg'  ) res+="${DEFAULT_BG}" ;;
+                '/blue_bg'    ) res+="${DEFAULT_BG}" ;;
+                '/magenta_bg' ) res+="${DEFAULT_BG}" ;;
+                '/cyan_bg'    ) res+="${DEFAULT_BG}" ;;
+                '/white_bg'   ) res+="${DEFAULT_BG}" ;;
 
-                'b' ) out+="${TEXT_BOLD_ON}"  ;;
-                '/b') out+="${TEXT_BOLD_OFF}" ;;
+                'b' ) res+="${TEXT_BOLD_ON}"  ;;
+                '/b') res+="${TEXT_BOLD_OFF}" ;;
 
-                'u' ) out+="${TEXT_UNDERLINED_ON}"  ;;
-                '/u') out+="${TEXT_UNDERLINED_OFF}" ;;
+                'u' ) res+="${TEXT_UNDERLINED_ON}"  ;;
+                '/u') res+="${TEXT_UNDERLINED_OFF}" ;;
 
-                'blink' ) out+="${TEXT_BLINK_ON}"  ;;
-                '/blink') out+="${TEXT_BLINK_OFF}" ;;
+                'blink' ) res+="${TEXT_BLINK_ON}"  ;;
+                '/blink') res+="${TEXT_BLINK_OFF}" ;;
 
-                'so' ) out+="${TEXT_STANDOUT_ON}"  ;;
-                '/so') out+="${TEXT_STANDOUT_OFF}" ;;
+                'so' ) res+="${TEXT_STANDOUT_ON}"  ;;
+                '/so') res+="${TEXT_STANDOUT_OFF}" ;;
             esac
         fi
 
         local idxTail=0
         idxTail=$(( ${#suffix} - ${#tag} - 1 ))
         if [ ${idxTail} -eq 0 ]; then # '>' is the latest char in the input string
-            s=''
+            txt=''
             break
         fi
 
-        s="${s:(-${idxTail})}"
+        txt="${txt:(-${idxTail})}"
     done
 
-    out+="${s}"
+    res+="${txt}"
 
-    out="${out//&lt;/<}" 
-    out="${out//&gt;/>}" 
-    out="${out//&amp;/&}" 
+    res="${res//&lt;/<}" 
+    res="${res//&gt;/>}" 
+    res="${res//&amp;/&}" 
 
-    printf '%b' "${out}"
+    AssignToVar "${3}" "${res}"
+}
+
+OutFmt()
+{
+    local fmt="${1}"
+    shift
+
+    local useColors=true
+    if [ ! -t 1 ] || IsVarSet NO_COLOR; then # || IsVarSet ANSI_COLORS_DISABLED
+        useColors=false
+    fi
+
+    local args=()
+
+    while [ $# -gt 0 ]; do
+        local s=''
+        __Colorize "${1}" "${useColors}" @s
+        shift
+        args+=("${s}")
+    done
+
+   printf "${fmt}" "${args[@]}"
+}
+
+Out()
+{
+    OutFmt '%b' "$*"
 }
