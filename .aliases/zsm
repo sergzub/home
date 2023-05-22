@@ -1,15 +1,18 @@
 # We have to set PS1 here because .bashrc modify it itself
-export PS1='\u@\h:\w\[\033[32m\]$(__git_ps1 | sed -e '\''s:^ *(\(.*\)) *$:[\1]:'\'')\[\033[00m\]\$ '
+# export PS1='\u@\h:\w\[\033[32m\]$(__git_ps1 | sed -e '\''s:^ *(\(.*\)) *$:[\1]:'\'')\[\033[00m\]\$ '
 
 alias aa='sudo apt update && apt list --upgradable'
 alias au='sudo apt -y upgrade && sudo apt -y autoremove && is-reboot-required'
 alias h='history'
-alias ss='ps -ef | grep'
+# alias ss='ps -ef | grep'
 alias mc='mc -x'
 
 alias gh="vcsh home" # Git Home
 alias r1cp="r1 commit && r1 push github ${R1_WP}"
 
+# alias sudo='sudo -E'
+alias shut='sudo shutdown now'
+alias g='git'
 
 # xtitle()
 # {
