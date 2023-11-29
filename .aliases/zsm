@@ -1,5 +1,7 @@
 # We have to set PS1 here because .bashrc modify it itself
-# export PS1='\u@\h:\w\[\033[32m\]$(__git_ps1 | sed -e '\''s:^ *(\(.*\)) *$:[\1]:'\'')\[\033[00m\]\$ '
+
+__zsm_ps1_arrow='└─'
+export PS1='\u@\h:\w\n${__zsm_ps1_arrow}$(err=$?; [ $err = 0 ] && true || echo "\[\033[31m\][$err]\[\033[00m\]")\[\033[32m\]$(__git_ps1 | sed -e '\''s:^ *(\(.*\)) *$:[\1]:'\'')\[\033[00m\]\$ '
 
 alias aa='sudo apt update && apt list --upgradable'
 alias au='sudo apt -y upgrade && sudo apt -y autoremove && is-reboot-required'
