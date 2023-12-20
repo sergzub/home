@@ -1,6 +1,6 @@
 [user]
-	email = sergzub@gmail.com
-	name = Sergey Zubkovsky
+#	email = sergzub@gmail.com
+#	name = Sergey Zubkovsky
 [push]
 	default = simple
 [credential]
@@ -10,9 +10,12 @@
 	cm = commit
 	df = diff
 	st = status
-	ll = log --all --source --oneline --graph
+	# ll = log --source --oneline --graph --all -12
+	ll = log --all -20 --graph --pretty=format:'%C(auto)%h%d %C(cyan)(%cr)%Creset %C(green)%ce%Creset %s'
 	ba = branch -avv
 	br = branch
 	sm = submodule
 [gc]
 	autoDetach = false
+[pull]
+	ff = only
