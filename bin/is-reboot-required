@@ -21,12 +21,10 @@ Main()
         printf '║ %s ║\n' "${msg}"
         printf '╚%s╝\n' "${doubleLine}"
         Out "</reset>"
-        return 0
     else
         echo "┌───────────────────┐"
         echo "│ No need to reboot │"
         echo "└───────────────────┘"
-        return 1
     fi
 }
 

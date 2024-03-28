@@ -1,6 +1,6 @@
-[user]
-#	email = sergzub@gmail.com
-#	name = Sergey Zubkovsky
+#[user]
+#	email =
+#	name =
 [push]
 	default = simple
 [credential]

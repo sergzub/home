@@ -121,3 +121,19 @@ Out()
 {
     OutFmt '%b' "$*"
 }
+
+OutCmdRes()
+{
+    local res="${1}"
+    local cmd="${2}"
+
+    local okFail=''
+
+    if [ "${res}" = '0' ]; then
+        okFail='<green>OK</green>'
+    else
+        okFail='<b><red>FAIL</red></b>'" (${res})"
+    fi
+
+    Out "${cmd} -- ${okFail}\n"
+}

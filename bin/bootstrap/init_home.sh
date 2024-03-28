@@ -1,4 +1,4 @@
-#!/bin/sh -eux
+#!/bin/bash -eux
 
 Main()
 {
@@ -24,7 +24,7 @@ Host github.com
     IdentityFile /home/${USER}/.ssh/github_id_rsa
 HereDoc_SSH_CONFIG_APPEND
 
-    sudo ${SHELL} -c "cat > /etc/sudoers.d/${USER}" << HereDoc_SUDOERSD_USER
+    (umask 337 && sudo ${SHELL} -c "cat > /etc/sudoers.d/${USER}") << HereDoc_SUDOERSD_USER
 ${USER} ALL=NOPASSWD:ALL
 Defaults:${USER} env_keep += "HOME"
 Defaults:${USER} env_keep += "PATH"
